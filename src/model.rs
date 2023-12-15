@@ -70,6 +70,21 @@ impl ModelConfig {
             dropout: DropoutConfig::new(self.dropout).init(),
         }
     }
+
+    /// Returns the initialized model using the recorded weights.
+    /// 使用训练记录的模型数据来初始化模型，里面包含训练好的权重
+    pub fn init_with<B: Backend>(&self, record: ModelRecord<B>) -> Model<B> {
+        Model {
+            conv1: Conv2dConfig::new([1, 8], [3, 3]).init_with(record.conv1),
+            conv2: Conv2dConfig::new([8, 16], [3, 3]).init_with(record.conv2),
+            pool: AdaptiveAvgPool2dConfig::new([8, 8]).init(),
+            activation: ReLU::new(),
+            linear1: LinearConfig::new(16 * 8 * 8, self.hidden_size).init_with(record.linear1),
+            linear2: LinearConfig::new(self.hidden_size, self.num_classes)
+                .init_with(record.linear2),
+            dropout: DropoutConfig::new(self.dropout).init(),
+        }
+    }
 }
 
 impl<B: Backend> Model<B> {
@@ -82,7 +97,6 @@ impl<B: Backend> Model<B> {
 
         // Create a channel at the second dimension.
         let x = images.reshape([batch_size, 1, height, width]);
-
 
         let x = self.conv1.forward(x); // [batch_size, 8, _, _]
         let x = self.dropout.forward(x);

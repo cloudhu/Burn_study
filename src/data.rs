@@ -1,5 +1,4 @@
 use burn::{
-    module::Module,
     tensor::{backend::Backend, Tensor, Data, ElementConversion, Int},
     data::{dataloader::batcher::Batcher, dataset::source::huggingface::MNISTItem},
 };
