@@ -71,9 +71,9 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
             config.optimizer.init(),
             config.learning_rate,
         );
-
+    //开始训练模型
     let model_trained = learner.fit(dataloader_train, dataloader_test);
-
+    //保存训练好的模型文件
     model_trained
         .save_file(format!("{artifact_dir}/model"), &CompactRecorder::new())
         .expect("Trained model should be saved successfully");
